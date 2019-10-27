@@ -1,0 +1,59 @@
+# 给定一个二维的矩阵，包含 'X' 和 'O'（字母 O）。
+# 找到所有被 'X' 围绕的区域，并将这些区域里所有的 'O' 用 'X' 填充。
+# 示例:
+# X X X X
+# X O O X
+# X X O X
+# X O X X
+# 运行你的函数后，矩阵变为：
+# X X X X
+# X X X X
+# X X X X
+# X O X X
+# def solve(self, board: List[List[str]]) -> None:
+
+
+# 思路：用visited标记是否有走过(不能污染原数列所以新建visited), 如果坐标能到达边界, 就下一个
+# 如果坐标不能到底边界, 那就把这记录过的坐标返回, 最后一次过修改, 注意这题目无需返回结果
+
+
+class Solution:
+    def solve(self, board):
+        self.d = len(board)
+        if self.d == 0:
+            return
+        self.b = len(board[0])
+        self.visited = [[True] * self.b for x in range(self.d)]
+        lst = []
+        for i in range(self.d):
+            for j in range(self.b):
+                if board[i][j] == 'O':
+                    lst.append([i, j])
+        res = []
+        for i in lst:
+            self.turn = True
+            if self.visited[i[0]][i[1]]:
+                llst = self.dfs(board, i[0], i[1], [])
+                if llst != None:
+                    if res == []:
+                        res.append(llst)
+                    else:
+                        res[0].extend(llst)
+        if res == []:
+            return
+        for i in res[0]:
+            board[i[0]][i[1]] = 'X'
+        return
+
+    def dfs(self, board, i, j, lst):
+        form = [[1, 0], [-1, 0], [0, 1], [0, -1]]
+        lst.append([i, j])
+        self.visited[i][j] = False
+        if i == 0 or i == self.d-1 or j == 0 or j == self.b-1:
+            self.turn = False
+        for n in form:
+            if 0 <= i+n[0] <= self.d-1 and 0 <= j+n[1] <= self.b-1:
+                if self.visited[i+n[0]][j+n[1]] and board[i+n[0]][j+n[1]] == 'O':
+                    self.dfs(board, i+n[0], j+n[1], lst)
+        if self.turn:
+            return lst
