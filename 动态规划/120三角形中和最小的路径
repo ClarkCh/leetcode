@@ -1,0 +1,26 @@
+# 给定一个三角形，找出自顶向下的最小路径和。每一步只能移动到下一行中相邻的结点上。
+# 例如，给定三角形：
+# [
+#      [2],
+#     [3,4],
+#    [6,5,7],
+#   [4,1,8,3]
+# ]
+# 自顶向下的最小路径和为 11（即，2 + 3 + 5 + 1 = 11）。
+# 说明：
+# 如果你可以只使用 O(n) 的额外空间（n 为三角形的总行数）来解决这个问题，那么你的算法会很加分。
+# def minimumTotal(self, triangle: List[List[int]]) -> int:
+
+
+# 思路：使用动态规划, 自底向上的方向, 对当前的路径的最优选择进行记录, 
+# 找出从底层向最高层的过程中每一层能找出的当前最优结果, 用来作为下一步推导的查找内容
+# 最后最高层的内容即为所有路径中总和最小的答案
+
+
+class Solution:
+    def minimumTotal(self, triangle):
+        size = len(triangle)
+        for i in range(2, size+1):
+            for j in range(size+1-i):
+                triangle[-i][j] = min(triangle[-i+1][j], triangle[-i+1][j+1])
+        return triangle[0][0]
