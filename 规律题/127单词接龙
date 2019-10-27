@@ -1,0 +1,60 @@
+# 给定两个单词（beginWord 和 endWord）和一个字典，找到从 beginWord 到 endWord 的最短转换序列的长度。转换需遵循如下规则：
+# 每次转换只能改变一个字母。
+# 转换过程中的中间单词必须是字典中的单词。
+# 说明:
+# 如果不存在这样的转换序列，返回 0。
+# 所有单词具有相同的长度。
+# 所有单词只由小写字母组成。
+# 字典中不存在重复的单词。
+# 你可以假设 beginWord 和 endWord 是非空的，且二者不相同。
+# def ladderLength(self, beginWord: str, endWord: str, wordList: List[str]) -> int:
+
+
+# 思路：让单词之间根据是否只有一个单词的区别来判断是否有连线，并且设置visited列表防止重复
+# 另外由于BFS的后续消耗很大（金字塔塔基型）所以最好使用双向BFS(开始单词和最后单词一起向中间推理)
+
+
+from queue import Queue
+
+
+class Solution:
+    def ladderLength(self, beginWord, endWord, wordList):
+        if beginWord == endWord or endWord not in wordList:
+            return 0
+        dct = {}
+        size = len(wordList[0])
+        for i in wordList:
+            k = 0
+            for n in range(size):
+                if i[:n]+'*'+i[n+1:] not in dct:
+                    dct[i[:n]+'*'+i[n+1:]] = [i]
+                else:
+                    dct[i[:n] + '*' + i[n + 1:]].append(i)
+                k += 1
+        visited1 = {}
+        visited2 = {}
+        q = Queue()
+        p = Queue()
+        q.put((beginWord, 1))
+        p.put((endWord, 1))
+        visited1[beginWord] = 1
+        visited2[endWord] = 1
+        while True:
+            res1, level1 = q.get()
+            if res1 in visited2:
+                return visited2[res1] + level1 - 1
+            for i in range(size):
+                if res1[:i]+'*'+res1[i+1:] in dct:
+                    for n in dct[res1[:i]+'*'+res1[i+1:]]:
+                        if n != res1 and n not in visited1:
+                            q.put((n, level1 + 1))
+                            visited1[n] = level1 + 1
+            res2, level2 = p.get()
+            if res2 in visited1:
+                return visited1[res2] + level2 - 1
+            for i in range(size):
+                if res2[:i] + '*' + res2[i + 1:] in dct:
+                    for n in dct[res2[:i] + '*' + res2[i + 1:]]:
+                        if n != res2 and n not in visited2:
+                            p.put((n, level2 + 1))
+                            visited2[n] = level2 + 1
